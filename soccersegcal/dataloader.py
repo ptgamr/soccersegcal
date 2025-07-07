@@ -66,7 +66,12 @@ class Line:
         if p is None:
             return 0, None
         v = v / np.linalg.norm(v)
-        tt  = [-p[0] / v[0], -p[1] / v[1], (self.image_shape[1] - 1 - p[0]) / v[0], (self.image_shape[0] - 1 - p[1]) / v[1]]
+        # Avoid divide by zero by checking if v components are close to zero
+        tt = []
+        if abs(v[0]) > 1e-8:
+            tt.extend([-p[0] / v[0], (self.image_shape[1] - 1 - p[0]) / v[0]])
+        if abs(v[1]) > 1e-8:
+            tt.extend([-p[1] / v[1], (self.image_shape[0] - 1 - p[1]) / v[1]])
         tt = [t for t in tt if t >= 0 and np.isfinite(t)]
         if len(tt) == 0:
             return p

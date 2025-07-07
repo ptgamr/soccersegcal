@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.nn import functional as F
 import pytorch_lightning as pl
@@ -9,6 +10,9 @@ import fire
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import MLFlowLogger, WandbLogger
 from torchmetrics import Accuracy, MeanMetric
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class LitSoccerFieldSegmentation(pl.LightningModule):
 	def __init__(self):
@@ -51,7 +55,7 @@ class LitSoccerFieldSegmentation(pl.LightningModule):
 		self.log('val_loss', self.val_loss)
 		self.log('val_acc', self.val_acc)
 
-def train(datasetpath="data/SoccerNet/calibration-2023", batch_size=4, width=960, limit_batches=None, epochs=1000, logger="mlflow", checkpoint_path=None):
+def train(datasetpath=os.getenv('DATA_DIR', 'data/SoccerNet/calibration-2023'), batch_size=4, width=960, limit_batches=None, epochs=1000, logger="mlflow", checkpoint_path=None):
 	# Logging
 	if logger == "mlflow":
 		logger = MLFlowLogger(experiment_name="SoccerFieldSegmentation", log_model=True)
@@ -68,7 +72,7 @@ def train(datasetpath="data/SoccerNet/calibration-2023", batch_size=4, width=960
 	# Data
 	train_set = HFlipDataset(SoccerNetFieldSegmentationDataset(width=width, split="train", skip_bad=True, datasetpath=datasetpath))
 	val_set = HFlipDataset(SoccerNetFieldSegmentationDataset(width=width, split="valid", skip_bad=True, datasetpath=datasetpath))
-	loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count()//2, pin_memory=True)
+	loader_args = dict(batch_size=batch_size, num_workers=2, pin_memory=False)
 	train_loader = DataLoader(train_set, shuffle=True, **loader_args)
 	val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
 
