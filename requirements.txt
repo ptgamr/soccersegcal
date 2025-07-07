@@ -9,3 +9,4 @@ fire
 SoccerNet>=0.1.23
 scipy
 matplotlib
+python-dotenv

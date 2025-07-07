@@ -14,7 +14,9 @@ import cv2
 from shapely.geometry import LineString, Point
 from shapely.ops import split
 from sncalib.detect_extremities import join_points
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class Line:
     def __init__(self, pkts, image_shape):
@@ -262,8 +264,11 @@ def pview(img, pause=True):
 SEG_DEBUG = False
 
 if __name__ == '__main__':
+    import os
+
+    datasetpath = os.getenv('DATA_DIR', 'data/SoccerNet/calibration-2023')
     # data = HFlipDataset(SoccerNetFieldSegmentationDataset(split='valid'))
-    data = SoccerNetFieldSegmentationDataset(split='valid')
+    data = SoccerNetFieldSegmentationDataset(datasetpath=datasetpath, split='valid')
 
     flipp()
     for i in range(10, len(data)):
