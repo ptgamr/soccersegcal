@@ -1,6 +1,6 @@
 tqdm
 wandb
-vi3o
+vi3o[full]==0.11.1
 opencv-python
 shapely
 pytorch3d
