@@ -9,6 +9,10 @@ from time import time
 from scipy.optimize import fmin
 from soccersegcal.train import LitSoccerFieldSegmentation
 import fire
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def main(checkpoint_path="checkpoint.ckpt", indexes=None, data=None, out='cams_out', part='valid', show=False, overwrite=False):
     out_dir = Path(out)

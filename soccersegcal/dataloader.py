@@ -5,6 +5,7 @@ from torchvision.io import read_image, ImageReadMode
 from torchvision.transforms.functional import resize, hflip
 import torch
 import json
+import os
 
 from sncalib.soccerpitch import SoccerPitch
 from vi3o.image import imviewsc, imview, imread, imscale
@@ -93,7 +94,7 @@ class MisingLine(Line):
         pass
 
 class SoccerNetFieldSegmentationDataset(Dataset):
-    def __init__(self, datasetpath="data/SoccerNet/calibration-2023", split="valid", width=640, height=None, skip_bad=False):
+    def __init__(self, datasetpath = os.getenv('DATA_DIR', 'data/SoccerNet/calibration-2023'), split="valid", width=640, height=None, skip_bad=False):
         if height is None:
             height = (width * 9) // 16
         self.root = Path(datasetpath)
@@ -195,7 +196,8 @@ class SoccerNetFieldSegmentationDataset(Dataset):
             plot_lines = [np.int32(l.line_string.coords) for l in rim if not l.missing]
             cv2.polylines(segs, plot_lines, False, 255, 1)
 
-            if segs[max(center_y-1, 0):min(center_y+2, self.shape[0]), max(center_x-1, 0):min(center_x+2, self.shape[1])].max() == 255:  # If the center is on the line try moving it towards the long border not contained
+            # If the center is on the line try moving it towards the long border not contained
+            if segs[max(center_y-1, 0):min(center_y+2, self.shape[0]), max(center_x-1, 0):min(center_x+2, self.shape[1])].max() == 255:  
                 for n in area['border']:
                     if n not in area['contains'] and n in lines:
                         l = Line(lines[n], self.shape).line_string
@@ -266,14 +268,11 @@ def pview(img, pause=True):
         img = img.transpose(1, 2, 0)
     viewsc(img, pause=pause)
 
-SEG_DEBUG = False
+SEG_DEBUG = True
 
 if __name__ == '__main__':
-    import os
-
-    datasetpath = os.getenv('DATA_DIR', 'data/SoccerNet/calibration-2023')
     # data = HFlipDataset(SoccerNetFieldSegmentationDataset(split='valid'))
-    data = SoccerNetFieldSegmentationDataset(datasetpath=datasetpath, split='valid')
+    data = SoccerNetFieldSegmentationDataset(split='valid')
 
     flipp()
     for i in range(10, len(data)):
