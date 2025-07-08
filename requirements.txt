@@ -3,7 +3,6 @@ wandb
 vi3o[full]==0.11.1
 opencv-python
 shapely
-pytorch3d
 pytorch-lightning
 fire
 SoccerNet>=0.1.23
@@ -11,3 +10,5 @@ scipy
 matplotlib
 python-dotenv
 mlflow>=1.0.0
+torchvision
+pyglet
